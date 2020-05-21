@@ -1,0 +1,19 @@
+{
+  "name": "chromereqtojson",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "atob": "^2.1.2",
+    "btoa": "^1.2.1",
+    "prettier": "^2.0.5",
+    "puppeteer": "^3.1.0",
+    "update-json-file": "^1.1.1"
+  }
+}
