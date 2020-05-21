@@ -20,7 +20,7 @@ async function interceptRequestsForPage(page) {
 
   await client.send('Network.setRequestInterception', { 
     patterns: scriptUrlPatterns.map(pattern => ({
-      urlPattern: pattern, interceptionStage: 'HeadersReceived'
+      urlPattern: pattern, interceptionStage: 'HeadersReceived',resourceType:'XHR'
     }))
   });
 
@@ -51,6 +51,8 @@ async function interceptRequestsForPage(page) {
   client.on('Network.requestIntercepted', async ({ interceptionId, request, responseHeaders, resourceType }) => {
     console.log(`Intercepted ${request.url} {interception id: ${interceptionId}}`);
 
+    const contentType = responseHeaders["content-type"]
+
     const response = await client.send('Network.getResponseBodyForInterception',{ interceptionId });
 
     const bodyData = response.base64Encoded ? atob(response.body) : response.body;
@@ -59,7 +61,12 @@ async function interceptRequestsForPage(page) {
 
     console.log(`Continuing interception ${interceptionId}`)
 
-    await updateJsonFile(jsonPath,isFound(request.url,request.method,bodyData))   
+    if(contentType && ["application/javascript","application/json"].includes(contentType.split(";")[0]))
+    {
+        await updateJsonFile(jsonPath,isFound(request.url,request.method,bodyData))   
+
+    }
+
 
 
     client.send('Network.continueInterceptedRequest', {
