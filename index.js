@@ -49,19 +49,21 @@ async function interceptRequestsForPage(page) {
   }
 
   client.on('Network.requestIntercepted', async ({ interceptionId, request, responseHeaders, resourceType }) => {
-    console.log(`Intercepted ${request.url} {interception id: ${interceptionId}}`);
 
-    const contentType = responseHeaders["content-type"]
+    const contentTypeHeader = Object.keys(responseHeaders).find(k => k.toLowerCase() === 'content-type');
+
+
+    const contentType = responseHeaders[contentTypeHeader]
 
     const response = await client.send('Network.getResponseBodyForInterception',{ interceptionId });
 
     const bodyData = response.base64Encoded ? atob(response.body) : response.body;
 
-    console.log("bodyData",bodyData,"request",request.url)
+    console.log("request",request.url)
 
-    console.log(`Continuing interception ${interceptionId}`)
+    console.log(`contrnt Type ${JSON.stringify(responseHeaders)}`)
 
-    if(contentType && ["application/javascript","application/json"].includes(contentType.split(";")[0]))
+    if(contentType && ["application/javascript","application/json"].includes(contentType.trim().split(";")[0]))
     {
         await updateJsonFile(jsonPath,isFound(request.url,request.method,bodyData))   
 
